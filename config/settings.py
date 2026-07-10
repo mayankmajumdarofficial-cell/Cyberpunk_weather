@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-w8sc7*%!1x=gs9$jjwe0aw_9a*(ce*rfr14f$9zg(v2(b-o$ue
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cyberpunk-weather.onrender.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
