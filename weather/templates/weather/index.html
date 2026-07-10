@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBERDECK v4.02 - Atmospheric Scanner</title>
+    <style>
+        /* --- Salvaged Scrap-Metal & Dust Palette --- */
+        :root {
+            --mercury-silver: #e2e8f0;
+            --silver-glow: rgba(226, 232, 240, 0.4);
+            --dust-iron: #70635c;
+            --exhaust-amber: #f59e0b;
+            --deck-dark: #0f0e0d;
+            --chassis-steel: #262422;
+            --grid-line: #2d2825;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        body {
+            background-color: #080707;
+            /* Industrial terminal micro-grid pattern */
+            background-image: 
+                linear-gradient(rgba(112, 99, 92, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(112, 99, 92, 0.08) 1px, transparent 1px);
+            background-size: 16px 16px;
+            color: var(--mercury-silver);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1.5rem;
+            overflow-x: hidden;
+        }
+
+        /* --- Heavy Industrial Scrap-Steel Chassis --- */
+        .cyberdeck {
+            background: linear-gradient(180deg, var(--chassis-steel), #171514);
+            border: 5px solid #4a433f;
+            border-bottom: 16px solid #36302e; /* Chunky machined lower casing grip */
+            border-radius: 12px;
+            padding: 24px;
+            width: 100%;
+            max-width: 580px;
+            box-shadow: 
+                0 0 50px rgba(0, 0, 0, 0.8), 
+                inset 0 0 20px rgba(0, 0, 0, 0.6);
+            position: relative;
+        }
+
+        .cyberdeck::before {
+            content: "UNIT TYPE: SCRAP-LINK II // ASBESTOS OVERLAY ACTIVE";
+            position: absolute;
+            top: -22px;
+            left: 20px;
+            font-size: 0.65rem;
+            color: var(--dust-iron);
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .deck-hardware {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.7rem;
+            color: #8c7d75;
+            border-bottom: 1px double var(--grid-line);
+            padding-bottom: 6px;
+        }
+
+        /* --- Distorted Flickering Cathode Screen --- */
+        .screen {
+            background-color: var(--deck-dark);
+            border: 3px solid #1c1a19;
+            border-radius: 6px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(226, 232, 240, 0.08);
+            /* Screen hardware flicker animation */
+            animation: masterFlicker 0.18s infinite;
+        }
+
+        /* Distorted Coarse Scanlines */
+        .screen::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(
+                rgba(15, 14, 13, 0) 50%, 
+                rgba(0, 0, 0, 0.5) 50%
+            ), linear-gradient(90deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.02));
+            z-index: 10;
+            background-size: 100% 6px, 8px 100%;
+            pointer-events: none;
+        }
+
+        /* Scrolling interference wave */
+        .screen::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 0%, rgba(226, 232, 240, 0.04) 8%, transparent 15%);
+            z-index: 11;
+            pointer-events: none;
+            animation: scanlineMove 7s linear infinite;
+        }
+
+        .terminal-header {
+            border-bottom: 1px dashed var(--dust-iron);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .terminal-header h1 {
+            font-size: 1.4rem;
+            color: var(--mercury-silver);
+            letter-spacing: 2px;
+            text-shadow: 0 0 8px var(--silver-glow);
+        }
+
+        /* --- Input UI Controls --- */
+        .scanner-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 20;
+        }
+
+        .scan-input {
+            flex: 1;
+            background: #090808;
+            border: 1px solid #3b3633;
+            padding: 12px;
+            color: var(--mercury-silver);
+            font-size: 1rem;
+            outline: none;
+            text-transform: uppercase;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.9);
+        }
+
+        .scan-input:focus {
+            border-color: var(--mercury-silver);
+            box-shadow: 0 0 10px var(--silver-glow);
+        }
+
+        .scan-btn {
+            background: #141312;
+            border: 1px solid var(--dust-iron);
+            color: var(--mercury-silver);
+            padding: 10px 22px;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+
+        .scan-btn:hover {
+            background: var(--mercury-silver);
+            color: #000;
+            box-shadow: 0 0 12px var(--mercury-silver);
+        }
+
+        /* --- Scanned Console Stream Output --- */
+        .results {
+            border: 1px solid #242120;
+            background: rgba(9, 8, 8, 0.9);
+            padding: 18px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            border-bottom: 1px dashed rgba(112, 99, 92, 0.3);
+            padding-bottom: 6px;
+        }
+
+        .data-row .label {
+            color: var(--dust-iron);
+        }
+
+        .data-row .val {
+            color: var(--mercury-silver);
+            text-shadow: 0 0 6px var(--silver-glow);
+        }
+
+        .status-alert {
+            margin-top: 15px;
+            border: 1px solid var(--exhaust-amber);
+            background: rgba(245, 158, 11, 0.05);
+            padding: 10px;
+            text-align: center;
+            color: var(--exhaust-amber);
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
+            animation: hazardBlink 2s infinite steps(2);
+        }
+
+        .error-box {
+            color: var(--exhaust-amber);
+            border: 1px solid var(--exhaust-amber);
+            padding: 12px;
+            background: rgba(245, 158, 11, 0.03);
+            font-size: 0.9rem;
+            text-shadow: 0 0 5px rgba(245, 158, 11, 0.3);
+        }
+
+        /* --- Distorted Scanning Animations --- */
+        @keyframes masterFlicker {
+            0% { opacity: 0.99; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+            /* Synchronization horizontal tube jumps */
+            12% { transform: skewX(0deg); }
+            13% { transform: skewX(1.2deg); opacity: 0.93; }
+            14% { transform: skewX(0deg); }
+        }
+
+        @keyframes scanlineMove {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        @keyframes hazardBlink {
+            0%, 100% { opacity: 1; border-color: var(--exhaust-amber); }
+            50% { opacity: 0.5; border-color: transparent; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="cyberdeck">
+    <div class="deck-hardware">
+        <span>GRID-LINK: OFFLINE // BACKUP_GEN</span>
+        <span>RADS: 44mSv/h [CRITICAL_EXPOSURE]</span>
+    </div>
+    
+    <div class="screen">
+        <div class="terminal-header">
+            <h1>ENV-SCANNER v2.8</h1>
+            <p style="font-size: 0.75rem; color: var(--dust-iron)">ATMOSPHERIC DUST INTERCEPT // COLD METALLIC EMISSION</p>
+        </div>
+
+        <form method="POST" class="scanner-form">
+            {% csrf_token %}
+            <input type="text" name="region" class="scan-input" placeholder="INPUT TARGET ID / SECTOR MAP CORNER..." required>
+            <button type="submit" class="scan-btn">SCAN</button>
+        </form>
+
+        {% if error %}
+            <div class="error-box">
+                [!] EXHAUST MATRIX CONFLICT: {{ error }}
+            </div>
+        {% endif %}
+
+        {% if weather %}
+            <div class="results">
+                <div class="data-row">
+                    <span class="label">TARGET SECTOR:</span>
+                    <span class="val" style="color: #ffffff; text-shadow: 0 0 8px rgba(255,255,255,0.5);">{{ weather.region }}</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">THERMAL CONDENSATION:</span>
+                    <span class="val">{{ weather.temp }}°C</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">BIOLOGICAL RECEPTOR IMPACT:</span>
+                    <span class="val">{{ weather.feels_like }}°C</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">SUSPENDED ASH PARTICULATES:</span>
+                    <span class="val">{{ weather.humidity }}%</span>
+                </div>
+                <div class="data-row">
+                    <span class="label">CORROSIVE WIND FORCE:</span>
+                    <span class="val">{{ weather.wind }} km/h</span>
+                </div>
+                <div class="status-alert">
+                    SCAN MATRIX CRITERIA: {{ weather.status }}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>
